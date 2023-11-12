@@ -1,5 +1,6 @@
 const babel = require("@rollup/plugin-babel");
-import fs from "fs-extra";
+const fs = require("fs-extra");
+const copy = require("rollup-plugin-copy");
 const typescript = require("@rollup/plugin-typescript"); // 让 rollup 认识 ts 的代码
 const pkg = require("./package.json");
 
@@ -41,5 +42,10 @@ module.exports = {
         }
       },
     },
+    copy({
+      targets: [
+        { src: "src/bin", dest: "lib" }, // 将 assets 目录下的文件复制到 dist/assets 目录
+      ],
+    }),
   ],
 };
