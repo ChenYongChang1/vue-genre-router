@@ -1,0 +1,36 @@
+{
+  "name": "dd-common",
+  "version": "0.0.3",
+  "description": "",
+  "main": "lib/bundle.cjs.js",
+  "module": "lib/bundle.esm.js",
+  "browser": "lib/bundle.browser.js",
+  "types": "lib/types/index.d.ts",
+  "scripts": {
+    "dev": "rollup -c -w",
+    "build": "rollup -c",
+    "build:types": "tsc"
+  },
+  "bin": {
+    "dd-router": "lib/bin/genre-router.cjs"
+  },
+  "files": [
+    "lib/*"
+  ],
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.23.3",
+    "@babel/eslint-parser": "^7.23.3",
+    "@babel/plugin-syntax-import-assertions": "^7.23.3",
+    "@babel/preset-env": "^7.23.3",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "eslint": "^8.53.0",
+    "rollup": "^4.3.0",
+    "tslib": "^2.6.2",
+    "typescript": "*"
+  }
+}

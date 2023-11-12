@@ -1,0 +1,27 @@
+# Editor directories and files
+.idea
+
+# Package Manager
+node_modules
+.pnpm-debug.log*
+
+# System
+.DS_Store
+
+
+# Bundle
+# dist
+coverage
+
+# local env files
+*.local
+.eslintcache
+.stylelintcache
+cypress/screenshots/*
+cypress/videos/*
+tmp
+src/auto-imports.d.ts
+src/components.d.ts
+/dist
+component.d.ts
+lib

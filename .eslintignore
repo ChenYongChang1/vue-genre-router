@@ -1,0 +1,9 @@
+node_modules
+dist
+lib
+coverage
+*.sh
+*.md
+*.scss
+*.woff
+*.ttf
