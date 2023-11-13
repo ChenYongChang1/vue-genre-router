@@ -1,5 +1,9 @@
 # vue-genre-router
 
+## 目的
+
+生成 routes 文件 动态路由是 `:id` 这种
+
 ## 配置文件
 
 > dd.config.js
@@ -27,4 +31,10 @@ module.exports = {
     "dev": "cross-env NODE_ENV=development dd-router"
   }
 }
+```
+
+## 指定路由页面的 layout
+
+```javascript
+<script lang="ts" setup layout="default">
 ```
