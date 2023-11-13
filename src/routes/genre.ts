@@ -50,7 +50,7 @@ export class GenreRoutes {
     this._action = _action;
   }
   async getlayoutMap() {
-    const layoutFiles = await this.getDirectory(this._layoutPath);
+    const layoutFiles = (await this.getDirectory(this._layoutPath)) || [];
     layoutFiles.forEach((item) => {
       const name = item.replace(".vue", "");
       this._layoutMap[name] = `__'${(this._layoutPath + "/" + item).replace(
@@ -231,6 +231,26 @@ export class GenreRoutes {
     const routes = await this.genreRoutes(fullFiles);
     this.writeRoutes(routes);
   }
+  createPathIfNotExists(filePath: string): void {
+    // 获取目录部分
+    const directoryPath = nodePath.dirname(filePath);
+
+    // 判断目录是否存在，不存在则创建
+    if (!nodeFs.existsSync(directoryPath)) {
+      nodeFs.mkdirSync(directoryPath, { recursive: true });
+      console.log(`Created directory: ${directoryPath}`);
+    } else {
+      console.log(`Directory already exists: ${directoryPath}`);
+    }
+
+    // 判断文件是否存在，不存在则创建
+    if (!nodeFs.existsSync(filePath)) {
+      nodeFs.writeFileSync(filePath, "");
+      console.log(`Created file: ${filePath}`);
+    } else {
+      console.log(`File already exists: ${filePath}`);
+    }
+  }
   writeRoutes = (routes: IVueRouter[]) => {
     const routeStr = JSON.stringify(routes);
     let suffixImport: {
@@ -254,6 +274,7 @@ export class GenreRoutes {
       return random;
     });
     const path = this.getFullPath(this._defaultRoutes);
+    this.createPathIfNotExists(path);
     nodeFs.writeFileSync(
       path,
       suffixImport.importArr.join("\n") +
