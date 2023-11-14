@@ -10,11 +10,21 @@
 > commonjs
 
 ```javascript
+/**
+ * @param path 默认layout的目录 默认为 ./src/layout
+ * @param defaultLayout 默认未指定layout页面使用的layout 取得是目录下面的文件名称
+ * @param pageLayout 可以是正则或者方法 正则会拿match的第一项 方法返回的是字符串
+ */
+interface ILayoutOpt {
+  path?: string;
+  defaultLayout?: string;
+  pageLayout?: RegExp | ((content: string) => string);
+}
 module.exports = {
   path: "./src/views", // 默认路由页面代码
   defaultRoutes: "./src/router/routes.ts", // 生成到哪个文件
   exportSuffix: "export default __routes", // 导出方式 文件里有个变量叫 __routes
-  defaultLayout: "", // 默认布局的名称 layout的目录是./src/layout
+  layout: ILayoutOpt,
   alias: "@", // 生成路由 由哪个alias
   isLazy: process.env.NODE_ENV !== "development", // 是否懒加载
   action: { afterGenre: (route: IVueRouter) => IVueRouter }, // 每次生成后的 执行这个方法 可以修改具体的routes
@@ -36,5 +46,5 @@ module.exports = {
 ## 指定路由页面的 layout
 
 ```javascript
-<script lang="ts" setup layout="default">
+<script lang="ts" layout="default">
 ```

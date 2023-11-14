@@ -19,35 +19,71 @@ interface IVueRouter {
     title?: string;
   };
 }
-
+/**
+ * @param path 默认layout的目录 默认为 ./src/layout
+ * @param defaultLayout 默认未指定layout页面使用的layout 取得是目录下面的文件名称
+ * @param pageLayout 可以是正则或者方法 正则会拿match的第一项 方法返回的是字符串
+ */
+interface ILayoutOpt {
+  path?: string;
+  defaultLayout?: string;
+  pageLayout?: RegExp | ((content: string) => string);
+}
+/**
+ *
+ * @param path 需要构建路由的目录 ./开头
+ * @param defaultRoutes 路由表save的位置
+ * @param exportSuffix 路由导出方式 `export default __routes`
+ * @param defaultLayout 默认的layout的名称 名称就是写的名字{a}.vue 那么名字就是a
+ * @param alias 默认的alias 默认是@
+ * @param isLazy
+ * @param action {afterGenre: (route: IVueRouter) => IVueRouter}
+ */
+interface IGnereOption {
+  path?: string;
+  defaultRoutes?: string;
+  exportSuffix?: string;
+  layout?: ILayoutOpt;
+  alias?: string;
+  isLazy?: boolean;
+  action?: { afterGenre: (route: IVueRouter) => IVueRouter } | undefined;
+}
 export class GenreRoutes {
   _layoutPath: string;
   _projectPath: string;
   _layoutMap: { [k: string]: string };
-  _action: { afterGenre: (route: IVueRouter) => IVueRouter } | undefined;
+  _action: IGnereOption["action"];
+  _path: string;
+  _defaultRoutes: string;
+  _exportSuffix: string;
+  _alias: string;
+  _isLazy: boolean;
+  _layout: ILayoutOpt;
   /**
    *
-   * @param {*} _path 需要构建路由的目录 ./开头
-   * @param {*} _defaultRoutes 路由表save的位置
-   * @param {*} _exportSuffix 路由导出方式 `export default __routes`
-   * @param {*} _defaultLayout 默认的layout的名称 名称就是写的名字{a}.vue 那么名字就是a
-   * @param {*} _alias 默认的alias 默认是@
-   * @param {*} _isLazy
-   * @param _action {afterGenre}
+   * @param opt
    */
-  constructor(
-    public _path = "./src/views",
-    public _defaultRoutes = "./src/router/routes.ts",
-    public _exportSuffix = "export default __routes",
-    public _defaultLayout = "",
-    public _alias = "@",
-    public _isLazy = true,
-    _action = undefined
-  ) {
-    this._layoutPath = "./src/layout";
+  constructor(opt: IGnereOption = {}) {
+    const {
+      path = "./src/views",
+      defaultRoutes = "./src/router/routes.ts",
+      exportSuffix = "export default __routes",
+      layout = { path: "./src/layout" },
+      alias = "@",
+      isLazy = true,
+      action = undefined,
+    } = opt;
+    this._path = path;
+    this._defaultRoutes = defaultRoutes;
+    this._exportSuffix = exportSuffix;
+    this._layout = layout;
+    this._alias = alias;
+    this._isLazy = isLazy;
+    this._action = action;
+
+    this._layoutPath = this._layout.path || "./src/layout";
     this._projectPath = nodePath.resolve("./");
     this._layoutMap = {};
-    this._action = _action;
   }
   async getlayoutMap() {
     const layoutFiles = (await this.getDirectory(this._layoutPath)) || [];
@@ -86,10 +122,24 @@ export class GenreRoutes {
     nextPath: string
   ): Promise<IFileRow> {
     const content = await this.getPathContent(nextPath);
-    const matchName =
-      content.match(/\<script(.|\n)*?setup(.|\n)*?layout="(.*?)"(.|\n)*?\>/) ||
-      [];
-    const layoutName = matchName[3] || this._defaultLayout;
+    let matchName =
+      content.match(/\<script\s*.*?\s* layout="(.*?)"(\s+.*?\s*)?>/) || [];
+    let layoutName = matchName[1];
+    if (
+      this._layout.pageLayout instanceof RegExp ||
+      this._layout.pageLayout instanceof Function
+    ) {
+      if (this._layout.pageLayout instanceof RegExp) {
+        matchName = content.match(this._layout.pageLayout) || [];
+        layoutName = matchName[1];
+      } else {
+        layoutName = this._layout.pageLayout(content);
+      }
+    }
+
+    // const matchName =
+    //   content.match(/\<script\s*.*?\s* layout="(.*?)"(\s+.*?\s*)?>/) || [];
+    // const layoutName = matchName[1] || this._layout.defaultLayout;
     return {
       type,
       path: routerPath,

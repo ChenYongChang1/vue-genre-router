@@ -34,15 +34,7 @@ const doGenre = (config) => {
 
   const { GenreRoutes } = require("../bundle.cjs");
 
-  const genre = new GenreRoutes(
-    configInfo.path,
-    configInfo.defaultRoutes,
-    configInfo.exportSuffix,
-    configInfo.defaultLayout,
-    configInfo.alias,
-    configInfo.isLazy,
-    configInfo.action
-  );
+  const genre = new GenreRoutes(configInfo);
 
   genre.start();
 };
