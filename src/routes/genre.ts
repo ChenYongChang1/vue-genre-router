@@ -9,6 +9,9 @@ interface IFileRow {
   fullPath: string;
   layout?: string;
   children?: IFileRow[];
+  meta?: {
+    [k: string]: string;
+  };
 }
 interface IVueRouter {
   name: string;
@@ -16,7 +19,7 @@ interface IVueRouter {
   component: string;
   children?: IVueRouter[];
   meta?: {
-    title?: string;
+    [k: string]: string;
   };
 }
 /**
@@ -115,6 +118,26 @@ export class GenreRoutes {
       });
     });
   }
+  getPageMeta = (content: string) => {
+    const matchStr = content.match(/(_defineMeta\s*=\s*)\{/);
+    if (matchStr) {
+      const { index } = matchStr;
+      let endIndex = index as number;
+      let num = 0;
+      let flag = true;
+      while (flag || !(num === 0 && endIndex !== index)) {
+        if (content[endIndex] === "{") {
+          num++;
+          flag = false;
+        } else if (content[endIndex] === "}") {
+          num--;
+        }
+        endIndex++;
+      }
+      return content.slice(index, endIndex);
+    }
+    return "";
+  };
   async genreVueFromatRoute(
     type: IFileType,
     routerPath: string,
@@ -122,6 +145,13 @@ export class GenreRoutes {
     nextPath: string
   ): Promise<IFileRow> {
     const content = await this.getPathContent(nextPath);
+    // const { index } = content.match(/(?!_defineMeta\s*=\s*)\{/);
+    var _defineMeta = "";
+    const strMeta = this.getPageMeta(content);
+
+    eval(strMeta);
+    let meta = _defineMeta || {};
+
     let matchName =
       content.match(/\<script\s*.*?\s* layout="(.*?)"(\s+.*?\s*)?>/) || [];
     let layoutName = matchName[1];
@@ -146,6 +176,7 @@ export class GenreRoutes {
       nextPath,
       name: nextPath.replace(/\//g, "_").replace(/\./g, ""),
       fullPath,
+      meta,
       // fileContent: content,
       layout: layoutName,
     };
@@ -178,6 +209,7 @@ export class GenreRoutes {
           {
             type: "directory",
             path: "",
+            meta: rowInfo.meta,
             nextPath: nextPath + ".vue",
             name: nextPath.replace(/\//g, "_").replace(/\./g, "") + "vue",
             fullPath,
@@ -242,7 +274,7 @@ export class GenreRoutes {
           {
             path: "",
             name: row.name,
-            // meta,
+            meta: row.meta,
             component: `__'${row.nextPath.replace("./src", this._alias)}'__`,
           },
         ]
@@ -251,6 +283,7 @@ export class GenreRoutes {
       path: row.path,
       name: row.name + (children ? "_layout" : ""),
       //   meta,
+      meta: row.meta,
       component: isHasLayout
         ? this._layoutMap[row.layout as string]
         : `__'${row.nextPath.replace("./src", this._alias)}'__`,
@@ -278,6 +311,8 @@ export class GenreRoutes {
   async start() {
     await this.getlayoutMap();
     const fullFiles = await this.formatDirectory(this._path);
+    console.log(fullFiles);
+
     const routes = await this.genreRoutes(fullFiles);
     this.writeRoutes(routes);
   }

@@ -47,4 +47,6 @@ module.exports = {
 
 ```javascript
 <script lang="ts" layout="default">
+  const _defineMeta = { title: "ddd" }
+  去指定路由meta信息
 ```
