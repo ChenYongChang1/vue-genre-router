@@ -311,7 +311,6 @@ export class GenreRoutes {
   async start() {
     await this.getlayoutMap();
     const fullFiles = await this.formatDirectory(this._path);
-    console.log(fullFiles);
 
     const routes = await this.genreRoutes(fullFiles);
     this.writeRoutes(routes);
