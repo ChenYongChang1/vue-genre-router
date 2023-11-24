@@ -1,6 +1,6 @@
 {
   "name": "dd-common-router",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "",
   "main": "lib/bundle.cjs.js",
   "module": "lib/bundle.esm.js",
@@ -18,7 +18,7 @@
     "lib/*"
   ],
   "keywords": [],
-  "author": "",
+  "author": "yongchang.chen",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.23.3",
