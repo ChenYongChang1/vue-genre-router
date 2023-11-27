@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const copy = require("rollup-plugin-copy");
 const typescript = require("@rollup/plugin-typescript"); // 让 rollup 认识 ts 的代码
 const pkg = require("./package.json");
+const { terser } = require("rollup-plugin-terser");
 
 module.exports = {
   input: "./src/index.ts",
@@ -25,6 +26,7 @@ module.exports = {
     exclude: "node_modules/**",
   },
   plugins: [
+    terser(),
     typescript(),
     babel({
       babelHelpers: "bundled",
