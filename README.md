@@ -7,7 +7,6 @@
 ## 配置文件
 
 > dd.config.js
-> commonjs
 
 ```javascript
 /**
@@ -26,7 +25,7 @@ module.exports = {
   exportSuffix: "export default __routes", // 导出方式 文件里有个变量叫 __routes
   layout: ILayoutOpt,
   alias: "@", // 生成路由 由哪个alias
-  isLazy: process.env.NODE_ENV !== "development", // 是否懒加载
+  isLazy: true, // 是否懒加载
   action: { afterGenre: (route: IVueRouter) => IVueRouter }, // 每次生成后的 执行这个方法 可以修改具体的routes
 };
 ```
@@ -49,4 +48,26 @@ module.exports = {
 <script lang="ts" layout="default">
   const _defineMeta = { title: "ddd" }
   去指定路由meta信息
+```
+
+## 结果
+
+```javascript
+const r_rwek8funts = () => import("@/views/index.vue");
+const __routes = [
+  {
+    path: "/",
+    name: "_src_views_indexvue_layout",
+    meta: { title: "ddd" },
+    children: [
+      {
+        path: "",
+        name: "_src_views_indexvue",
+        meta: { title: "ddd" },
+        component: r_rwek8funts,
+      },
+    ],
+  },
+];
+export default __routes;
 ```
