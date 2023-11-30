@@ -29,8 +29,15 @@ const findConfig = async (path = __dirname) => {
   return configPah;
 };
 
-const doGenre = (config) => {
-  const configInfo = config ? require(config) : {};
+const doGenre = async (config) => {
+  let configInfo = {};
+  try {
+    try {
+      configInfo = (await import(config)).default;
+    } catch (e) {
+      configInfo = require(config);
+    }
+  } catch (e) {}
 
   const { GenreRoutes } = require("../bundle.cjs");
 
