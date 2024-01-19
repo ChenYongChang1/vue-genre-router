@@ -49,7 +49,9 @@ interface IGnereOption {
   layout?: ILayoutOpt;
   alias?: string;
   isLazy?: boolean;
-  action?: { afterGenre: (route: IVueRouter) => IVueRouter } | undefined;
+  action?:
+    | { afterGenre: (route: IVueRouter) => IVueRouter | false }
+    | undefined;
 }
 export class GenreRoutes {
   _layoutPath: string;
@@ -303,10 +305,14 @@ export class GenreRoutes {
       vue: this.genreVueRoute,
       directory: this.genreDirectiveRoute,
     };
-    return fullFiles.map((item) => {
-      const info = genreMap[item.type](item);
-      return this._action?.afterGenre(info) || info;
-    });
+    return fullFiles
+      .map((item) => {
+        const info = genreMap[item.type](item);
+        const result = this._action?.afterGenre(info);
+        if (result === false) return false;
+        return result || info;
+      })
+      .filter((i) => i);
   }
   async start() {
     await this.getlayoutMap();
